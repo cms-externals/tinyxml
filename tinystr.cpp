@@ -25,7 +25,11 @@ distribution.
 /*
  * THIS FILE WAS ALTERED BY Tyge Løvset, 7. April 2005.
  */
+/*
+ * THIS FILE WAS ALTERED BY Eric Vaandering, 25 August 2009.
+ */
 
+#define TIXML_USE_STL
 
 #ifndef TIXML_USE_STL
 
