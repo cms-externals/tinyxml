@@ -8,7 +8,7 @@
 #****************************************************************************
 
 # DEBUG can be set to YES to include debugging info, or NO otherwise
-DEBUG          := YES
+DEBUG          := NO
 
 # PROFILE can be set to YES to include profiling info, or NO otherwise
 PROFILE        := NO
@@ -25,16 +25,16 @@ LD     := g++
 AR     := ar rc
 RANLIB := ranlib
 
-DEBUG_CFLAGS     := -Wall -Wno-format -g -DDEBUG
-RELEASE_CFLAGS   := -Wall -Wno-unknown-pragmas -Wno-format -O3
+DEBUG_CFLAGS     := -std=c++14 -Wall -Wno-format -g -DDEBUG -fPIC
+RELEASE_CFLAGS   := -std=c++14 -Wall -Wno-unknown-pragmas -Wno-format -O3 -fPIC
 
 LIBS		 :=
 
 DEBUG_CXXFLAGS   := ${DEBUG_CFLAGS} 
 RELEASE_CXXFLAGS := ${RELEASE_CFLAGS}
 
-DEBUG_LDFLAGS    := -g
-RELEASE_LDFLAGS  :=
+DEBUG_LDFLAGS    := -g -shared -Wl,-E -Wl,-z,defs
+RELEASE_LDFLAGS  := -shared -Wl,-E -Wl,-z,defs
 
 ifeq (YES, ${DEBUG})
    CFLAGS       := ${DEBUG_CFLAGS}
@@ -67,7 +67,7 @@ endif
 #****************************************************************************
 
 #INCS := -I/usr/include/g++-2 -I/usr/local/include
-INCS :=
+INCS := -I${BOOST_ROOT}/include
 
 
 #****************************************************************************
@@ -80,8 +80,12 @@ CXXFLAGS := ${CXXFLAGS} ${DEFS}
 #****************************************************************************
 # Targets of the build
 #****************************************************************************
-
-OUTPUT := xmltest
+OS := $(shell uname)
+ifeq ($(OS),Darwin)
+  OUTPUT := libtinyxml.dylib
+else
+  OUTPUT := libtinyxml.so
+endif
 
 all: ${OUTPUT}
 
@@ -90,7 +94,7 @@ all: ${OUTPUT}
 # Source files
 #****************************************************************************
 
-SRCS := tinyxml.cpp tinyxmlparser.cpp xmltest.cpp tinyxmlerror.cpp tinystr.cpp
+SRCS := tinyxml.cpp tinyxmlparser.cpp tinyxmlerror.cpp tinystr.cpp
 
 # Add on the sources for libraries
 SRCS := ${SRCS}
@@ -126,5 +130,4 @@ depend:
 
 tinyxml.o: tinyxml.h tinystr.h
 tinyxmlparser.o: tinyxml.h tinystr.h
-xmltest.o: tinyxml.h tinystr.h
 tinyxmlerror.o: tinyxml.h tinystr.h
